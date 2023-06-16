@@ -1,14 +1,9 @@
 import 'package:finance_app/helper/expense_helper.dart';
 import 'package:finance_app/helper/icon_helper.dart';
-import 'package:finance_app/models/activity.dart';
 import 'package:finance_app/models/add_data.dart';
-import 'package:finance_app/models/category.dart';
-import 'package:finance_app/models/getter.dart';
 import 'package:finance_app/widgets/income_expense_info_card.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../models/money.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -24,10 +19,6 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // leading: const Icon(
-        //   Icons.menu,
-        //   color: Colors.white,
-        // ),
         actions: [
           IconButton(
             onPressed: () {},
@@ -224,35 +215,6 @@ class _HomeState extends State<Home> {
               )
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Container buildActivityButton(Activity activity) {
-    return Container(
-      margin: const EdgeInsets.all(10),
-      height: 90,
-      width: 90,
-      decoration: BoxDecoration(
-        color: activity.backgroundColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            activity.icon,
-            color: activity.iconColor,
-          ),
-          const SizedBox(height: 5),
-          Text(
-            activity.title,
-            style: const TextStyle(
-              color: Colors.black54,
-              fontWeight: FontWeight.bold,
-            ),
-          )
         ],
       ),
     );

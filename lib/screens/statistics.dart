@@ -1,11 +1,9 @@
 import 'package:finance_app/helper/icon_helper.dart';
 import 'package:finance_app/models/add_data.dart';
-import 'package:finance_app/models/getter.dart';
 import 'package:finance_app/helper/expense_helper.dart';
 import 'package:finance_app/widgets/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 class Statistics extends StatefulWidget {
   const Statistics({Key? key}) : super(key: key);
@@ -17,6 +15,7 @@ class Statistics extends StatefulWidget {
 class _StatisticsState extends State<Statistics> {
   final box = Hive.box<AddData>('expense_data');
   List day = ['Day', 'Week', 'Month', 'Year'];
+  var showExpense = true;
   List expenseList = [today(), week(), month(), year()];
   List<AddData> selectedDateTimeValue = [];
 
@@ -114,13 +113,31 @@ class _StatisticsState extends State<Statistics> {
                       width: 120,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text(
-                            'Expense',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          SizedBox(width: 5),
-                          Icon(Icons.arrow_downward_sharp),
+                        children: [
+                          TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  showExpense = !showExpense;
+                                });
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    showExpense ? 'Expense' : 'Income',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey.shade700),
+                                  ),
+                                  SizedBox(width: 5),
+                                  Icon(
+                                      showExpense
+                                          ? Icons.arrow_downward_sharp
+                                          : Icons.arrow_upward_sharp,
+                                      color: showExpense
+                                          ? Colors.grey.shade700
+                                          : Color(0xff00838f)),
+                                ],
+                              ))
                         ],
                       ),
                       decoration: BoxDecoration(
@@ -131,24 +148,7 @@ class _StatisticsState extends State<Statistics> {
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
-              Chart(),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: Row(
-                  children: [
-                    Text(
-                      'Top Spendings',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
+              Chart(index: selectedIndex, showExpense: showExpense),
             ],
           ),
         ),

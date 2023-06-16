@@ -1,4 +1,5 @@
 import 'package:finance_app/models/add_data.dart';
+import 'package:finance_app/models/expense_data_chart.dart';
 import 'package:hive/hive.dart';
 import 'package:collection/collection.dart';
 import 'package:intl/intl.dart';
@@ -96,3 +97,117 @@ List<AddData> year() {
 }
 
 /// Statistics - Chart
+
+List<ExpenseDataChart> chartDayExpense(bool showExpense) {
+  final yearData = today();
+  var hours = yearData.map((e) {
+    if (showExpense ? e.IN == 'Expense' : e.IN == 'Income') {
+      return e.category;
+    }
+  }).toList();
+
+  var hoursExpense = yearData.map((e) {
+    if (showExpense ? e.IN == 'Expense' : e.IN == 'Income') {
+      return e.amount;
+    }
+  }).toList();
+
+  List<ExpenseDataChart> list = [];
+  for (var i = 0; i < hours.length; i++) {
+    if (hours[i] != null) {
+      list.add(ExpenseDataChart(
+          hours[i].toString(), int.parse(hoursExpense[i].toString())));
+    }
+  }
+
+  return getFilteredData(list);
+}
+
+List<ExpenseDataChart> chartWeekExpense(bool showExpense) {
+  final weekData = week();
+  var weekDays = weekData.map((e) {
+    if (showExpense ? e.IN == 'Expense' : e.IN == 'Income') {
+      return e.category;
+    }
+  }).toList();
+
+  var weekExpense = weekData.map((e) {
+    if (showExpense ? e.IN == 'Expense' : e.IN == 'Income') {
+      return e.amount;
+    }
+  }).toList();
+
+  List<ExpenseDataChart> list = [];
+  for (var i = 0; i < weekDays.length; i++) {
+    if (weekDays[i] != null) {
+      list.add(ExpenseDataChart(
+          weekDays[i].toString(), int.parse(weekExpense[i].toString())));
+    }
+  }
+
+  return getFilteredData(list);
+}
+
+List<ExpenseDataChart> chartMonthExpense(bool showExpense) {
+  final monthData = month();
+  var months = monthData.map((e) {
+    if (showExpense ? e.IN == 'Expense' : e.IN == 'Income') {
+      return e.category;
+    }
+  }).toList();
+
+  var monthExpense = monthData.map((e) {
+    if (showExpense ? e.IN == 'Expense' : e.IN == 'Income') {
+      return e.amount;
+    }
+  }).toList();
+
+  List<ExpenseDataChart> list = [];
+  for (var i = 0; i < months.length; i++) {
+    if (months[i] != null) {
+      list.add(ExpenseDataChart(
+          months[i].toString(), int.parse(monthExpense[i].toString())));
+    }
+  }
+
+  return getFilteredData(list);
+}
+
+List<ExpenseDataChart> chartYearExpense(bool showExpense) {
+  final yearData = year();
+  var years = yearData.map((e) {
+    if (showExpense ? e.IN == 'Expense' : e.IN == 'Income') {
+      return e.category;
+    }
+  }).toList();
+
+  var yearExpense = yearData.map((e) {
+    if (showExpense ? e.IN == 'Expense' : e.IN == 'Income') {
+      return e.amount;
+    }
+  }).toList();
+
+  List<ExpenseDataChart> list = [];
+  for (var i = 0; i < years.length; i++) {
+    if (years[i] != null) {
+      list.add(ExpenseDataChart(
+          years[i].toString(), int.parse(yearExpense[i].toString())));
+    }
+  }
+  return getFilteredData(list);
+}
+
+List<ExpenseDataChart> getFilteredData(List<ExpenseDataChart> list) {
+  Map<String, ExpenseDataChart> output = {};
+
+  list.forEach((expense) {
+    if (output.containsKey(expense.category)) {
+      output[expense.category]!.amount += expense.amount;
+    } else {
+      output[expense.category] =
+          ExpenseDataChart(expense.category, expense.amount);
+    }
+  });
+
+  return output.values.toList();
+}

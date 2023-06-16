@@ -1,51 +1,56 @@
+import 'package:finance_app/helper/expense_helper.dart';
+import 'package:finance_app/models/expense_data_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class Chart extends StatefulWidget {
-  const Chart({Key? key}) : super(key: key);
+  int index;
+  bool showExpense;
+  Chart({Key? key, required this.index, required this.showExpense})
+      : super(key: key);
 
   @override
   State<Chart> createState() => _ChartState();
 }
 
 class _ChartState extends State<Chart> {
-  List<SalesData> salesData = [
-    SalesData('Jan', 35000),
-    SalesData('Feb', 2800),
-    SalesData('Mar', 340),
-    SalesData('Apr', 3222),
-    SalesData('May', 4000),
-    SalesData('June', 4000),
-    SalesData('July', 4000),
-    SalesData('Aug', 4000),
-    SalesData('Sep', 4000),
-    SalesData('Oct', 4000),
-    SalesData('Nov', 4000),
-    // SalesData('Dec', 4000),
-  ];
+  List<ExpenseDataChart> data = [];
 
   @override
   Widget build(BuildContext context) {
+    switch (widget.index) {
+      case 0:
+        data = chartDayExpense(widget.showExpense);
+        break;
+      case 1:
+        data = chartWeekExpense(widget.showExpense);
+        break;
+      case 2:
+        data = chartMonthExpense(widget.showExpense);
+        break;
+      case 3:
+        data = chartYearExpense(widget.showExpense);
+        break;
+      default:
+    }
+
     return Container(
       width: double.infinity,
       height: 400,
-      child: SfCartesianChart(
-        primaryXAxis: CategoryAxis(),
-        series: <SplineSeries<SalesData, String>>[
-          SplineSeries<SalesData, String>(
-            dataSource: salesData,
-            xValueMapper: (SalesData sales, _) => sales.year,
-            yValueMapper: (SalesData sales, _) => sales.sales,
-          ),
+      child: SfCircularChart(
+        // Enables the legend
+        legend: Legend(isVisible: true),
+        tooltipBehavior: TooltipBehavior(enable: true),
+        series: <CircularSeries<ExpenseDataChart, String>>[
+          // Initialize line series
+          PieSeries<ExpenseDataChart, String>(
+            dataSource: data,
+            xValueMapper: (ExpenseDataChart sales, _) => sales.category,
+            yValueMapper: (ExpenseDataChart sales, _) => sales.amount,
+            dataLabelSettings: DataLabelSettings(isVisible: true),
+          )
         ],
       ),
     );
   }
-}
-
-class SalesData {
-  SalesData(this.year, this.sales);
-
-  final String year;
-  final double sales;
 }

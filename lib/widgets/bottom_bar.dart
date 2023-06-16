@@ -1,5 +1,6 @@
 import 'package:finance_app/screens/add_expense.dart';
 import 'package:finance_app/screens/home.dart';
+import 'package:finance_app/screens/set_budget.dart';
 import 'package:finance_app/screens/statistics.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,7 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigation extends State<BottomNavigation> {
   int selected_index = 0;
-  List screens = [Home(), Statistics()];
+  List screens = [Home(), Statistics(), Setbudget()];
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,7 @@ class _BottomNavigation extends State<BottomNavigation> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
+        shape: const CircularNotchedRectangle(),
         child: Padding(
           padding: const EdgeInsets.only(top: 8, bottom: 8),
           child: Row(

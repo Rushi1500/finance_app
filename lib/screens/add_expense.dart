@@ -1,3 +1,4 @@
+import 'package:finance_app/helper/category_helper.dart';
 import 'package:finance_app/helper/icon_helper.dart';
 import 'package:finance_app/models/add_data.dart';
 import 'package:flutter/material.dart';
@@ -13,17 +14,7 @@ class AddExpense extends StatefulWidget {
 class _AddExpenseState extends State<AddExpense> {
   final box = Hive.box<AddData>('expense_data');
 
-  List<String> categories = [
-    'Food',
-    'Utility',
-    'Fashion',
-    'Taxes',
-    'Rent',
-    'Insurance',
-    'Business',
-    'Job',
-    'Other'
-  ];
+  List<String> categories = expenseCategories + incomeCategories;
   List<String> incomeOrExpense = ['Income', 'Expense'];
 
   String? selectedCategory;

@@ -10,11 +10,18 @@ class Chart extends StatefulWidget {
 
 class _ChartState extends State<Chart> {
   List<SalesData> salesData = [
-    SalesData('Jan', 35),
-    SalesData('Feb', 28),
-    SalesData('Mar', 34),
-    SalesData('Apr', 32),
-    SalesData('May', 40)
+    SalesData('Jan', 35000),
+    SalesData('Feb', 2800),
+    SalesData('Mar', 340),
+    SalesData('Apr', 3222),
+    SalesData('May', 4000),
+    SalesData('June', 4000),
+    SalesData('July', 4000),
+    SalesData('Aug', 4000),
+    SalesData('Sep', 4000),
+    SalesData('Oct', 4000),
+    SalesData('Nov', 4000),
+    // SalesData('Dec', 4000),
   ];
 
   @override

@@ -1,10 +1,14 @@
+import 'package:finance_app/helper/expense_helper.dart';
+import 'package:finance_app/helper/icon_helper.dart';
 import 'package:finance_app/models/activity.dart';
+import 'package:finance_app/models/add_data.dart';
 import 'package:finance_app/models/category.dart';
 import 'package:finance_app/models/getter.dart';
 import 'package:finance_app/widgets/income_expense_info_card.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../models/money.dart';
-
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -14,189 +18,150 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _selectedItemIndex = 0;
-
-  final String balance = "50000";
-
-  final List<Activity> activities = [
-    Activity(
-      Icons.card_membership,
-      'My Card',
-      Colors.blue.withOpacity(0.3),
-      const Color(0xff01579b),
-    ),
-    Activity(
-      Icons.transfer_within_a_station,
-      'Transfer',
-      Colors.cyanAccent.withOpacity(0.3),
-      const Color(0xff01579b),
-    ),
-    Activity(
-      Icons.pie_chart,
-      'Statistics',
-      const Color(0xffd7ccc8),
-      const Color(0xff01579b),
-    ),
-  ];
-
-  final List<Category> categories = [
-    Category(Icons.fastfood, 'Food', 1200, 20),
-    Category(Icons.fastfood, 'Food', 1200, 20),
-    Category(Icons.fastfood, 'Food', 1200, 20),
-  ];
+  final box = Hive.box<AddData>('expense_data');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Row(
-        children: [
-          buildBottomNavigationBarButton(context, Icons.home, 0),
-          buildBottomNavigationBarButton(context, Icons.card_giftcard, 1),
-          buildBottomNavigationBarButton(context, Icons.camera, 2),
-          buildBottomNavigationBarButton(context, Icons.pie_chart, 3),
-          buildBottomNavigationBarButton(context, Icons.person, 4),
+      appBar: AppBar(
+        // leading: const Icon(
+        //   Icons.menu,
+        //   color: Colors.white,
+        // ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.notifications),
+          )
         ],
+        backgroundColor: const Color(0x44000000),
+        elevation: 0,
+        title: const Text(
+          'Available Balance',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xff00b686), Color(0xff00838f)],
+            ),
+          ),
+        ),
       ),
-      body: Stack(
-        children: [
-          Column(
+      body: ValueListenableBuilder(
+        valueListenable: box.listenable(),
+        builder: (context, value, child) {
+          return Stack(
             children: [
-              Container(
-                height: 300,
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xff00b686), Color(0xff00838f)],
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20, top: 30),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Icon(Icons.menu, color: Colors.white),
-                          Text(
-                            'Availale Balance',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Icon(Icons.notifications, color: Colors.white),
-                        ],
+              Column(
+                children: [
+                  Container(
+                    height: 250,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xff00b686), Color(0xff00838f)],
                       ),
-                      const SizedBox(height: 20),
-                      Row(
+                    ),
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.only(left: 20, right: 20, top: 0),
+                      child: Column(
                         children: [
-                          Container(
-                            height: 80,
-                            width: 80,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 2,
-                                color: Colors.white,
-                              ),
-                              borderRadius: BorderRadius.circular(40),
-                            ),
-                            padding: const EdgeInsets.all(4),
-                            child: const CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                  'https://cdn-icons-png.flaticon.com/512/4086/4086679.png'),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          const SizedBox(height: 20),
+                          Row(
                             children: [
-                              const Text(
-                                'Rushikesh Dhule',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.wallet_giftcard,
+                              Container(
+                                height: 80,
+                                width: 80,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    width: 2,
                                     color: Colors.white,
                                   ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    balance,
-                                    style: const TextStyle(
+                                  borderRadius: BorderRadius.circular(40),
+                                ),
+                                padding: const EdgeInsets.all(4),
+                                child: const CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                      'https://cdn-icons-png.flaticon.com/512/4086/4086679.png'),
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Rushikesh Dhule',
+                                    style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
                                       color: Colors.white,
                                     ),
                                   ),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.wallet,
+                                        color: Colors.white,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        '₹ ${totalBalance().toString()}',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  )
                                 ],
                               )
                             ],
-                          )
+                          ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
+                      color: Colors.grey.shade100,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.only(top: 75),
+                        itemCount: box.values.toList().length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Dismissible(
+                              onDismissed: (DismissDirection direction) {
+                                setState(() {
+                                  box.values.toList()[index].delete();
+                                });
+                              },
+                              key: UniqueKey(),
+                              child:
+                                  buildTransaction(box.values.toList()[index]));
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                  ),
-                  color: Colors.grey.shade100,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.only(top: 75),
-                    itemCount: geter().length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return buildTransaction(geter()[index]);
-                    },
-                  ),
-                ),
-              ),
+              const IncomeExpenseInfoCard(),
             ],
-          ),
-          const IncomeExpenseInfoCard(),
-        ],
+          );
+        },
       ),
     );
   }
 
-  GestureDetector buildBottomNavigationBarButton(
-      BuildContext context, IconData icon, int index) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedItemIndex = index;
-        });
-      },
-      child: Container(
-        width: MediaQuery.of(context).size.width / 5,
-        decoration: index == _selectedItemIndex
-            ? BoxDecoration(
-                border: const Border(
-                  bottom: BorderSide(width: 4, color: Colors.green),
-                ),
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.green.withOpacity(0.3),
-                    Colors.green.withOpacity(0.013),
-                  ],
-                ),
-              )
-            : const BoxDecoration(),
-        height: 60,
-        child: Icon(icon, color: Colors.grey),
-      ),
-    );
-  }
-
-  Container buildTransaction(Money money) {
+  Container buildTransaction(AddData data) {
     return Container(
       padding: const EdgeInsets.all(15),
       height: 95,
@@ -212,35 +177,47 @@ class _HomeState extends State<Home> {
                 children: [
                   Row(
                     children: [
-                      Image.network(
-                        money.image!,
-                        height: 40,
+                      SizedBox(
                         width: 40,
+                        child: Icon(getIcon(data.category)),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 5),
                       Text(
-                        money.name!,
+                        data.category,
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    money.time!,
-                    style: const TextStyle(fontSize: 12),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text(
+                      '${data.dateTime.day}-${data.dateTime.month}-${data.dateTime.year}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text(
+                      data.explain,
+                      style: const TextStyle(
+                          fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
               Row(
                 children: [
                   Text(
-                    money.fee!,
+                    '₹ ${data.amount}',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color:
-                          money.buy ?? false ? const Color(0xff00838f) : Colors.grey,
+                      color: (data.IN == 'Income')
+                          ? const Color(0xff00838f)
+                          : Colors.grey,
                     ),
                   ),
                 ],

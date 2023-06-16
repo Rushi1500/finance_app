@@ -1,5 +1,7 @@
+import 'package:finance_app/helper/icon_helper.dart';
+import 'package:finance_app/models/add_data.dart';
 import 'package:flutter/material.dart';
-import 'package:finance_app/models/category.dart';
+import 'package:hive/hive.dart';
 
 class AddExpense extends StatefulWidget {
   const AddExpense({Key? key}) : super(key: key);
@@ -9,13 +11,24 @@ class AddExpense extends StatefulWidget {
 }
 
 class _AddExpenseState extends State<AddExpense> {
-  List<Category> categories = [
-    Category(Icons.fastfood, 'Food', 1200, 20),
-    Category(Icons.fastfood, 'Utility', 1200, 20),
-    Category(Icons.fastfood, 'Fashion', 1200, 20),
-  ];
+  final box = Hive.box<AddData>('expense_data');
 
-  Category? selectedCategory;
+  List<String> categories = [
+    'Food',
+    'Utility',
+    'Fashion',
+    'Taxes',
+    'Rent',
+    'Insurance',
+    'Business',
+    'Job',
+    'Other'
+  ];
+  List<String> incomeOrExpense = ['Income', 'Expense'];
+
+  String? selectedCategory;
+  String? selectedIncomeExpenseType;
+
   final TextEditingController explainExpenseController =
       TextEditingController();
   final TextEditingController amountController = TextEditingController();
@@ -51,16 +64,22 @@ class _AddExpenseState extends State<AddExpense> {
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20, top: 30),
+                  padding: const EdgeInsets.only(right: 20, top: 30),
                   child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.arrow_back,
-                                color: Colors.white),
+                          Container(
+                            height: 80,
+                            width: 80,
+                            child: IconButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              icon: const Icon(Icons.arrow_back,
+                                  color: Colors.white),
+                            ),
                           ),
                           const Text(
                             'Add Expense',
@@ -106,13 +125,15 @@ class _AddExpenseState extends State<AddExpense> {
               child: Column(
                 children: [
                   const SizedBox(height: 50),
-                  buildDropDownButton(),
+                  buildCategoriesDropDown(),
                   const SizedBox(height: 20),
                   buildTextField(explainExpenseController, explainFocus,
-                      'Expain expense', TextInputType.text),
+                      'Explain expense', TextInputType.text),
                   const SizedBox(height: 20),
                   buildTextField(amountController, amountFocus, 'Amount',
                       TextInputType.number),
+                  const SizedBox(height: 20),
+                  buildIncomeExpenseDropDown(),
                   const SizedBox(height: 20),
                   Container(
                     decoration: BoxDecoration(
@@ -154,10 +175,21 @@ class _AddExpenseState extends State<AddExpense> {
                     width: 150,
                     height: 50,
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        save();
+                      },
                       child: const Text(
                         'Save',
-                        style: TextStyle(color: Colors.black),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17,
+                        ),
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                          Color(0xff00838f),
+                        ),
                       ),
                     ),
                   ),
@@ -167,6 +199,28 @@ class _AddExpenseState extends State<AddExpense> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  save() {
+    var addExpenseOrIncome = AddData(
+        selectedCategory!,
+        explainExpenseController.text,
+        amountController.text,
+        selectedIncomeExpenseType!,
+        dateNow);
+    box.add(addExpenseOrIncome);
+    setState(() {
+      // selectedCategory = '';
+      explainExpenseController.clear();
+      amountController.clear();
+      // selectedIncomeExpenseType = '';
+      dateNow = DateTime.now();
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Expense saved successfully"),
       ),
     );
   }
@@ -200,7 +254,7 @@ class _AddExpenseState extends State<AddExpense> {
     );
   }
 
-  Padding buildDropDownButton() {
+  Padding buildCategoriesDropDown() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Container(
@@ -213,7 +267,7 @@ class _AddExpenseState extends State<AddExpense> {
             color: const Color(0xffc5c5c5),
           ),
         ),
-        child: DropdownButton<Category>(
+        child: DropdownButton<String>(
           value: selectedCategory,
           items: categories
               .map(
@@ -221,16 +275,13 @@ class _AddExpenseState extends State<AddExpense> {
                   child: Container(
                     child: Row(
                       children: [
-                        SizedBox(
-                          width: 40,
-                          child: Icon(
-                            e.icon,
-                            color: const Color(0xff00b686),
-                          ),
-                        ),
+                        // SizedBox(
+                        //   width: 40,
+                        //   child: Icon(e.icon),
+                        // ),
                         const SizedBox(width: 10),
                         Text(
-                          e.title,
+                          e,
                           style: const TextStyle(fontSize: 18),
                         )
                       ],
@@ -246,10 +297,10 @@ class _AddExpenseState extends State<AddExpense> {
                       children: [
                         SizedBox(
                           width: 40,
-                          child: Icon(e.icon),
+                          child: Icon(getIcon(e)),
                         ),
                         const SizedBox(width: 10),
-                        Text(e.title),
+                        Text(e),
                       ],
                     ))
                 .toList();
@@ -261,6 +312,82 @@ class _AddExpenseState extends State<AddExpense> {
           }),
           hint: const Text(
             'Category Type',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          dropdownColor: Colors.white,
+          isExpanded: true,
+          underline: Container(),
+        ),
+      ),
+    );
+  }
+
+  Padding buildIncomeExpenseDropDown() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        width: 300,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            width: 2,
+            color: const Color(0xffc5c5c5),
+          ),
+        ),
+        child: DropdownButton<String>(
+          value: selectedIncomeExpenseType,
+          items: incomeOrExpense
+              .map(
+                (e) => DropdownMenuItem(
+                  child: Container(
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 40,
+                          child: Icon(
+                            (e == 'Income')
+                                ? Icons.arrow_circle_up
+                                : Icons.arrow_circle_down,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          e,
+                          style: const TextStyle(fontSize: 18),
+                        )
+                      ],
+                    ),
+                  ),
+                  value: e,
+                ),
+              )
+              .toList(),
+          selectedItemBuilder: (context) {
+            return incomeOrExpense
+                .map((e) => Row(
+                      children: [
+                        SizedBox(
+                          width: 40,
+                          child: Icon(
+                            (e == 'Income')
+                                ? Icons.arrow_circle_up
+                                : Icons.arrow_circle_down,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(e),
+                      ],
+                    ))
+                .toList();
+          },
+          onChanged: ((value) {
+            setState(() {
+              selectedIncomeExpenseType = value;
+            });
+          }),
+          hint: const Text(
+            'Income / Expense',
             style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
           dropdownColor: Colors.white,

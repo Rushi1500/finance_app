@@ -1,17 +1,13 @@
+import 'package:finance_app/helper/expense_helper.dart';
 import 'package:flutter/material.dart';
 
 class IncomeExpenseInfoCard extends StatelessWidget {
   const IncomeExpenseInfoCard({Key? key}) : super(key: key);
 
-  final double income = 30000.00;
-  final double expense = 10000.00;
-
   @override
   Widget build(BuildContext context) {
-    double totalSavings = income - expense;
-
     return Positioned(
-      top: 185,
+      top: 125,
       right: 0,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
@@ -38,14 +34,16 @@ class IncomeExpenseInfoCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IncomeExpenseColumn(type: 'Income', value: income.toString()),
+                IncomeExpenseColumn(
+                    type: 'Income', value: '₹ ${totalIncome()}'),
                 Container(height: 50, width: 1, color: Colors.grey),
-                IncomeExpenseColumn(type: 'Expense', value: expense.toString()),
+                IncomeExpenseColumn(
+                    type: 'Expense', value: '₹ ${totalExpense()}'),
               ],
             ),
             const SizedBox(height: 10),
             Text(
-              'You spent $expense this month.\nYou saved a total $totalSavings this month.',
+              'You spent ₹ ${totalExpense().toString()} this month.\nYou saved a total ₹ ${totalBalance().toString()} this month.',
               style: const TextStyle(
                 fontSize: 13,
                 fontStyle: FontStyle.italic,

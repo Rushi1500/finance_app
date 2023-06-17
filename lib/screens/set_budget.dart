@@ -1,8 +1,9 @@
+import 'package:finance_app/helper/budget_helper.dart';
 import 'package:finance_app/helper/category_helper.dart';
 import 'package:finance_app/screens/set_budget_details.dart';
 import 'package:flutter/material.dart';
-import 'package:finance_app/models/add_data.dart';
-import 'package:finance_app/helper/expense_helper.dart';
+import 'package:hive/hive.dart';
+import 'package:finance_app/models/budget_data.dart';
 
 class Setbudget extends StatefulWidget {
   const Setbudget({Key? key}) : super(key: key);
@@ -12,6 +13,7 @@ class Setbudget extends StatefulWidget {
 }
 
 class _SetbudgetState extends State<Setbudget> {
+  final box = Hive.box<BudgetData>('budget_data');
   List types = ['Income', 'Expense'];
   int selectedIndex = 0;
   ValueNotifier notifier = ValueNotifier(0);
@@ -101,13 +103,17 @@ class _SetbudgetState extends State<Setbudget> {
             (context, index) {
               return GestureDetector(
                 onTap: () {
-                  print((selectedIndex == 0)
-                      ? incomeCategories[index]
-                      : expenseCategories[index]);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const SetBudgetDetails(),
+                      builder: (context) => SetBudgetDetails(
+                        category: (selectedIndex == 0)
+                            ? incomeCategories[index]
+                            : expenseCategories[index],
+                        alreaySetValue: getBudgetValueFor((selectedIndex == 0)
+                            ? incomeCategories[index]
+                            : expenseCategories[index]),
+                      ),
                     ),
                   );
                 },
@@ -122,7 +128,7 @@ class _SetbudgetState extends State<Setbudget> {
                           fontSize: 14, fontWeight: FontWeight.w700),
                     ),
                     trailing: Text(
-                      '₹ 1000',
+                      '₹ ${getBudgetValueFor((selectedIndex == 0) ? incomeCategories[index] : expenseCategories[index]).toString()}',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w900,

@@ -1,14 +1,22 @@
+import 'package:finance_app/models/budget_data.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class SetBudgetDetails extends StatefulWidget {
-  const SetBudgetDetails({Key? key}) : super(key: key);
+  final String category;
+  final int alreaySetValue;
+  SetBudgetDetails(
+      {Key? key, required this.category, required this.alreaySetValue})
+      : super(key: key);
 
   @override
   State<SetBudgetDetails> createState() => _SetBudgetDetailsState();
 }
 
 class _SetBudgetDetailsState extends State<SetBudgetDetails> {
+  final box = Hive.box<BudgetData>('budget_data');
   final TextEditingController budgetInputController = TextEditingController();
+
   FocusNode budgetFocus = FocusNode();
 
   @override
@@ -17,8 +25,8 @@ class _SetBudgetDetailsState extends State<SetBudgetDetails> {
       appBar: AppBar(
         backgroundColor: const Color(0x44000000),
         elevation: 0,
-        title: const Text(
-          'Food',
+        title: Text(
+          widget.category,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -33,9 +41,49 @@ class _SetBudgetDetailsState extends State<SetBudgetDetails> {
           ),
         ),
       ),
-      body: buildTextField(
-          budgetInputController, budgetFocus, "₹ 0.0", TextInputType.number),
+      body: Container(
+        alignment: Alignment.center,
+        child: Column(
+          children: [
+            SizedBox(height: 30),
+            buildTextField(budgetInputController, budgetFocus, '₹ 0.0',
+                TextInputType.number),
+            SizedBox(height: 20),
+            TextButton(
+              onPressed: () {
+                save();
+              },
+              child: const Text(
+                'Save',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                ),
+              ),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  Color(0xff00838f),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
+  }
+
+  save() {
+    var budget =
+        BudgetData(widget.category, int.parse(budgetInputController.text));
+    box.add(budget);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Budget saved successfully"),
+      ),
+    );
+    Navigator.of(context).pop();
   }
 
   Container buildTextField(TextEditingController controller,
@@ -50,7 +98,7 @@ class _SetBudgetDetailsState extends State<SetBudgetDetails> {
           color: const Color(0xffc5c5c5),
         ),
       ),
-      child: TextField(
+      child: TextFormField(
         keyboardType: textInputType,
         focusNode: focusNode,
         controller: controller,

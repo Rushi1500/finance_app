@@ -55,7 +55,7 @@ List<AddData> week() {
 
   for (DateTime date = startOfWeek;
       date.isBefore(endOfWeek) || date == endOfWeek;
-      date = date.add(Duration(days: 1))) {
+      date = date.add(const Duration(days: 1))) {
     datesInRange.add(date);
   }
 

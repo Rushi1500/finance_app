@@ -4,6 +4,7 @@ import 'package:finance_app/screens/set_budget_details.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:finance_app/models/budget_data.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class Setbudget extends StatefulWidget {
   const Setbudget({Key? key}) : super(key: key);
@@ -42,7 +43,12 @@ class _SetbudgetState extends State<Setbudget> {
           ),
         ),
       ),
-      body: buildCustomScroll(),
+      body: ValueListenableBuilder(
+        valueListenable: box.listenable(),
+        builder: (context, value, child) {
+          return buildCustomScroll();
+        },
+      ),
     );
   }
 

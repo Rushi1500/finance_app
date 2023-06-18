@@ -76,7 +76,23 @@ class _SetBudgetDetailsState extends State<SetBudgetDetails> {
   save() {
     var budget =
         BudgetData(widget.category, int.parse(budgetInputController.text));
-    box.add(budget);
+
+    if (box.values.toList().isEmpty) {
+      box.add(budget);
+    } else {
+      if (box.values
+          .toList()
+          .map((e) => e.category)
+          .contains(budget.category)) {
+        for (var i = 0; i < box.values.toList().length; i++) {
+          if (box.values.toList()[i].category == budget.category) {
+            box.putAt(i, budget);
+          }
+        }
+      } else {
+        box.add(budget);
+      }
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

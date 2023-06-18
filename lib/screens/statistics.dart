@@ -26,7 +26,7 @@ class _StatisticsState extends State<Statistics> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0x44000000),
+        backgroundColor: const Color(0x44000000),
         elevation: 0,
         title: const Text(
           'Statistics',
